@@ -23,7 +23,7 @@ typedef struct ads1115_adc {
 } ads1115_adc_t;
 
 void ads1115_read_config(ads1115_adc_t *adc);
-uint16_t ads1115_read_adc(ads1115_adc_t *adc, uint8_t chanel);
+void ads1115_read_adc(ads1115_adc_t *adc,uint16_t *adc_valeu, uint8_t chanel);
 void ads1115_init(i2c_inst_t *i2c_port, uint8_t i2c_addr,ads1115_adc_t *adc);
 
 void ads1115_init(i2c_inst_t *i2c_port, uint8_t i2c_addr,
@@ -37,14 +37,14 @@ void ads1115_read_config(ads1115_adc_t *adc){
     // Default config with bit 15 cleared is 1411
     uint8_t dst[2];
     i2c_write_blocking(adc->i2c_port, adc->i2c_addr,
-                       &ADS1115_POINTER_CONFIGURATION, 1, false);
+                       &ADS1115_POINTER_CONFIGURATION, 1, true);
     i2c_read_blocking(adc->i2c_port, adc->i2c_addr, &dst, 2,
                       false);
     adc->config = (dst[0] << 0x08) | dst[1];
     
 }
 
-uint16_t ads1115_read_adc( ads1115_adc_t *adc, uint8_t chanel){
+void ads1115_read_adc( ads1115_adc_t *adc, uint16_t *adc_valeu, uint8_t chanel){
     // If mode is single-shot, set bit 15 to start the conversion.
     
     ads1115_read_config(adc);
@@ -66,10 +66,10 @@ uint16_t ads1115_read_adc( ads1115_adc_t *adc, uint8_t chanel){
         }
     // Now read the value from last conversion
     uint8_t dst[2];
-    i2c_write_blocking(adc->i2c_port, adc->i2c_addr,&ADS1115_POINTER_CONVERSION, 1, false);
+    i2c_write_blocking(adc->i2c_port, adc->i2c_addr,&ADS1115_POINTER_CONVERSION, 1, true);
     i2c_read_blocking(adc->i2c_port, adc->i2c_addr, &dst, 2,false);
     sleep_ms(8);
-    return (dst[0] << 8) | dst[0];
+    *adc_valeu = (dst[0] << 8) | dst[1];
     
 }
 
@@ -90,10 +90,10 @@ int main()
     uint16_t adc_valueC;
     uint16_t adc_valueD;
     while(1){
-        adc_valueA = ads1115_read_adc( &adc_A,  0x00 );
-        adc_valueB = ads1115_read_adc( &adc_A,  0x01 );
-        adc_valueC = ads1115_read_adc( &adc_A,  0x02 );
-        adc_valueD = ads1115_read_adc( &adc_A,  0x03 );
+        ads1115_read_adc( &adc_A,&adc_valueA,  0x00 );
+        ads1115_read_adc( &adc_A,&adc_valueB,  0x01 );
+        ads1115_read_adc( &adc_A,&adc_valueC,  0x02 );
+        ads1115_read_adc( &adc_A,&adc_valueD,  0x03 );
         printf("Valor adc 0: %d     Valor adc 1: %d        Valor adc 2: %d      Valor adc 3: %d \n",adc_valueA,adc_valueB,adc_valueC,adc_valueD);
         sleep_ms(100);
     }
