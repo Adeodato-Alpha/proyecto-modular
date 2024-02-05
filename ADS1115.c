@@ -6,10 +6,16 @@
 #include <stdlib.h>
 
 #define I2C_PORT i2c0
+#define I2C_PORT_B i2c1
 #define I2C_FREQ 400000
 #define ADS1115_I2C_ADDR 0x48
+//ADS A
 const uint8_t SDA_PIN = 16;
 const uint8_t SCL_PIN = 17;
+//ADS B
+const uint8_t SDA_PIN_B = 14;
+const uint8_t SCL_PIN_B = 15;
+//
 static const uint8_t ADS1115_POINTER_CONVERSION = 0x00;
 static const uint8_t ADS1115_POINTER_CONFIGURATION = 0x01; 
 /***************************
@@ -74,28 +80,47 @@ void ads1115_read_adc( ads1115_adc_t *adc, uint16_t *adc_valeu, uint8_t chanel){
 }
 
 struct ads1115_adc adc_A;
+struct ads1115_adc adc_B;
 int main()
 {
     stdio_init_all();
+    //Inicializar ADS A
     i2c_init(I2C_PORT, I2C_FREQ);
+    //Inicializa ADS B
+    i2c_init(I2C_PORT_B, I2C_FREQ);
+    /*
+    Seteo de ADS A
+    */
     gpio_set_function(SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(SDA_PIN);
     gpio_pull_up(SCL_PIN);
-
+    /*
+    Inicializa ADS B
+    */
+    gpio_set_function(SDA_PIN_B, GPIO_FUNC_I2C);
+    gpio_set_function(SCL_PIN_B, GPIO_FUNC_I2C);
+    gpio_pull_up(SDA_PIN_B);
+    gpio_pull_up(SCL_PIN_B);
     // Initialise ADC
     ads1115_init(I2C_PORT, ADS1115_I2C_ADDR, &adc_A);
-    uint16_t adc_valueA;
-    uint16_t adc_valueB;
-    uint16_t adc_valueC;
-    uint16_t adc_valueD;
+    ads1115_init(I2C_PORT_B, ADS1115_I2C_ADDR, &adc_B);
+    uint16_t ADS_A[4];
+    uint16_t ADS_B[4];
     while(1){
-        ads1115_read_adc( &adc_A,&adc_valueA,  0x00 );
-        ads1115_read_adc( &adc_A,&adc_valueB,  0x01 );
-        ads1115_read_adc( &adc_A,&adc_valueC,  0x02 );
-        ads1115_read_adc( &adc_A,&adc_valueD,  0x03 );
-        printf("Valor adc 0: %d     Valor adc 1: %d        Valor adc 2: %d      Valor adc 3: %d \n",adc_valueA,adc_valueB,adc_valueC,adc_valueD);
+        
+        ads1115_read_adc( &adc_A,&ADS_A[0],  0x00 );
+        ads1115_read_adc( &adc_A,&ADS_A[1],  0x01 );
+        ads1115_read_adc( &adc_A,&ADS_A[2],  0x02 );
+        ads1115_read_adc( &adc_A,&ADS_A[3],  0x03 );
+        
+
+        ads1115_read_adc( &adc_A,&ADS_B[0],  0x00 );
+        ads1115_read_adc( &adc_A,&ADS_B[1],  0x01 );
+        ads1115_read_adc( &adc_A,&ADS_B[2],  0x02 );
+        ads1115_read_adc( &adc_A,&ADS_B[3],  0x03 );
+        printf("ADSA 0: %d ADSA 1: %d ADSA 2: %d ADSA 3: %d \n",ADS_A[0],ADS_A[1],ADS_A[2],ADS_A[3]);
+        printf("ADSB 0: %d ADSB 1: %d ADSB 2: %d ADSB 3: %d \n",ADS_B[0],ADS_B[1],ADS_B[2],ADS_B[3]);
         sleep_ms(100);
     }
-    
-}
+} 
