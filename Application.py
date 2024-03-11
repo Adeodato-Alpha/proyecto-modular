@@ -4,34 +4,37 @@ import matplotlib.animation as anime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from tkinter import Tk, Frame, StringVar, Label, Button,Entry
 #Empezar la figura/Plot
-def animate(i, dataList, ser):                                    
+def animate(i, dataList,datalist2, ser):                                    
     arduinoData_string = ser.readline().decode('ascii').strip().split(',')
     a1= [int(s) for s in arduinoData_string]                 
 
     try:
         arduinoData_float = float(a1[0])   
-        dataList.append(arduinoData_float)              
+        arduinoData2_float = float(a1[1])
+        dataList.append(arduinoData_float)
+        datalist2.append(arduinoData2_float)              
 
     except:                                                                          
         pass
-
+    datalist2 = datalist2[-50:]
     dataList = dataList[-50:]                           
     
     ax.clear()                                          
-    ax.plot(dataList)                                  
+    ax.plot(dataList)  
+    ax.plot(datalist2)                                
     
     ax.set_ylim([0, 35000])                              
     ax.set_title("RP2040")                        
     ax.set_ylabel("Lectura")                              
 
 dataList = []                                           
-                                                        
+datalist2 = []                                                       
 fig = plt.figure()                                      
 ax = fig.add_subplot(111)                               
 
 ser = serial.Serial('COM3',115200)                      
 time.sleep(2)                                           
-ani = anime.FuncAnimation(fig, animate, frames=100, fargs=(dataList, ser), interval=100) 
+ani = anime.FuncAnimation(fig, animate, frames=100, fargs=(dataList,datalist2, ser), interval=100) 
 
                                             
 
