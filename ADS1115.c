@@ -115,11 +115,11 @@ int main()
         ads1115_read_adc( &adc_A,&ADS_A[3],  0x03 );
         
 
-        ads1115_read_adc( &adc_A,&ADS_B[0],  0x00 );
-        ads1115_read_adc( &adc_A,&ADS_B[1],  0x01 );
-        ads1115_read_adc( &adc_A,&ADS_B[2],  0x02 );
-        ads1115_read_adc( &adc_A,&ADS_B[3],  0x03 );
-        printf("ADSA 0: %d ADSA 1: %d ADSA 2: %d ADSA 3: %d \n",ADS_A[0],ADS_A[1],ADS_A[2],ADS_A[3]);
+        ads1115_read_adc( &adc_B,&ADS_B[0],  0x00 );
+        ads1115_read_adc( &adc_B,&ADS_B[1],  0x01 );
+        ads1115_read_adc( &adc_B,&ADS_B[2],  0x02 );
+        ads1115_read_adc( &adc_B,&ADS_B[3],  0x03 );
+        printf("%d, %d, %d, %d, %d, %d, %d, %d\n",ADS_A[0],ADS_A[1],ADS_A[2],ADS_A[3],ADS_B[0],ADS_B[1],ADS_B[2],ADS_B[3]);
         //printf("ADSB 0: %d ADSB 1: %d ADSB 2: %d ADSB 3: %d \n",ADS_B[0],ADS_B[1],ADS_B[2],ADS_B[3]);
         sleep_ms(100);
     }
